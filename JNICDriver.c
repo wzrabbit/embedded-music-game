@@ -80,3 +80,11 @@ JNIEXPORT void JNICALL Java_com_wz_jnidriver_JNIDriver_writePiezo(JNIEnv *env, j
     int note = (int)char_note;
     write(piezo_fd, &note, sizeof(note));
 }
+
+JNIEXPORT void JNICALL Java_com_wz_jnidriver_JNIDriver_writeSegment(JNIEnv *env, jobject obj, jbyteArray arr, jint duration) {
+    if (segment_fd < 0) return;
+
+    jbyte *segment_chars = (*env)->GetByteArrayElements(env, arr, 0);
+    write(segment_fd, (unsigned char *)segment_chars, duration);
+    (*env)->ReleaseByteArrayElements(env, arr, segment_chars, 0);
+}
