@@ -58,3 +58,11 @@ JNIEXPORT void JNICALL Java_com_wz_jnidriver_JNIDriver_closeDrivers(JNIEnv *env,
     if (piezo_fd > 0) close(piezo_fd);
     if (segment_fd > 0) close(segment_fd);
 }
+
+JNIEXPORT void JNICALL Java_com_wz_jnidriver_JNIDriver_writeLED(JNIEnv *env, jobject obj, jbyteArray arr, jint count) {
+    if (led_fd < 0) return;
+
+    jbyte led_chars = (*env)->GetByteArrayElements(env, arr, 0);
+    write(led_fd, (unsigned char *)led_chars, count);
+    (*env)->ReleaseByteArrayElements(env, arr, led_chars, 0);
+}
