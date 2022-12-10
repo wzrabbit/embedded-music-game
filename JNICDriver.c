@@ -66,3 +66,10 @@ JNIEXPORT void JNICALL Java_com_wz_jnidriver_JNIDriver_writeLED(JNIEnv *env, job
     write(led_fd, (unsigned char *)led_chars, count);
     (*env)->ReleaseByteArrayElements(env, arr, led_chars, 0);
 }
+
+JNIEXPORT void JNICALL Java_com_wz_jnidriver_JNIDriver_writeVibrator(JNIEnv *env, jobject obj, jchar char_command) {
+    if (vibrator_fd < 0) return;
+
+    int command = (int)char_command;
+    write(vibrator_fd, &command, sizeof(command));
+}
