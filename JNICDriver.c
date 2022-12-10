@@ -73,3 +73,10 @@ JNIEXPORT void JNICALL Java_com_wz_jnidriver_JNIDriver_writeVibrator(JNIEnv *env
     int command = (int)char_command;
     write(vibrator_fd, &command, sizeof(command));
 }
+
+JNIEXPORT void JNICALL Java_com_wz_jnidriver_JNIDriver_writePiezo(JNIEnv *env, jobject obj, jchar char_note) {
+    if (piezo_fd < 0) return;
+
+    int note = (int)char_note;
+    write(piezo_fd, &note, sizeof(note));
+}
