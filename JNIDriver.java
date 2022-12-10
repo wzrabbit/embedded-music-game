@@ -57,7 +57,17 @@ public class JNIDriver implements JNIListener {
 		
         writeSegment(data, data.length);
 	}
-
+    
+    public void onReceive(int value) {
+        if (mainActivityTosser != null) {
+            mainActivityTosser.onReceive(value);
+        }
+    }
+    
+    public void setListener(JNIListener listener) {
+        mainActivityTosser = listener;
+    }
+    
     public void setLCDText(String text, int slot) {
         if (!isConnected) return;
         
@@ -81,5 +91,24 @@ public class JNIDriver implements JNIListener {
     public void finalize() throws Throwable {
         close();
         super.finalize();
+    }
+    
+    
+    private class PushButtonThread extends Thread {
+        @Override
+        public void run() {
+            super.run();
+        }
+        
+        try {
+            while (isConnected) {
+                try {
+                    onReceive(getInterrupt())
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (Exception e) { }
     }
 }
