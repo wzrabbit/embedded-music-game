@@ -88,3 +88,18 @@ JNIEXPORT void JNICALL Java_com_wz_jnidriver_JNIDriver_writeSegment(JNIEnv *env,
     write(segment_fd, (unsigned char *)segment_chars, duration);
     (*env)->ReleaseByteArrayElements(env, arr, segment_chars, 0);
 }
+
+JNIEXPORT jint JNICALL Java_com_wz_jnidriver_JNIDriver_getInterrupt(JNIEnv *env, jobject obj) {
+    char read_data[100];
+    int read_flag = read(pushbutton_fd, &read_data, 100);
+
+    if (read_flag < 0) return -1;
+
+    if (strcmp(read_data, UP_TEXT) == 0) return 1;
+    if (strcmp(read_data, DOWN_TEXT) == 0) return 2;
+    if (strcmp(read_data, LEFT_TEXT) == 0) return 3;
+    if (strcmp(read_data, RIGHT_TEXT) == 0) return 4;
+    if (strcmp(read_data, CENTER_TEXT) == 0) return 5;
+
+    return -1;
+}
