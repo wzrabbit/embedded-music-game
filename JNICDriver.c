@@ -103,3 +103,29 @@ JNIEXPORT jint JNICALL Java_com_wz_jnidriver_JNIDriver_getInterrupt(JNIEnv *env,
 
     return -1;
 }
+
+JNIEXPORT void JNICALL Java_com_wz_jnidriver_JNIDriver_writeLCDLine(JNIEnv *env, jclass class, jstring text, jint len, jint slot) {
+    if (textlcd_fd < 0) return;
+
+    jboolean iscopy;
+    int i = 0;
+    const char *text_utf = (*env)->GetStringUTFChars(env, text, &iscopy);
+
+    if (slot == 0) {
+        ioctl(textlcd_fd, TEXTLCD_DD_ADDRESS_1, NULL);
+    } else {
+        ioctl(textlcd_fd, TEXTLCD_DD_ADDRESS_2, NULL);
+    }
+
+    for (i = 0; i < len; i++) {
+        ioctl(textlcd_fd, TEXTLCD_WRITE_BYTE, text_utf[i]);
+    }
+
+    (*env)->ReleaseStringUTFChars(env, text, text_utf);
+}
+
+JNIEXPORT void JNICALL Java_com_wz_jnidriver_JNIDriver_clearLCD(JNIEnv *env, jclass class) {
+    if (textlcd_fd < 0) return;
+
+    ioctl(textlcd_fd, TEXTLCD_CLEAR, NULL);
+}
