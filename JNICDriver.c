@@ -6,6 +6,12 @@
 #define FAIL -1
 #define SUCCESS 1
 
+#define DO 0
+#define MI 4
+#define SO 7
+#define HIGH_DO 12
+#define CENTER 1
+
 #define UP_TEXT "Up"
 #define DOWN_TEXT "Down"
 #define LEFT_TEXT "Left"
@@ -95,11 +101,11 @@ JNIEXPORT jint JNICALL Java_com_wz_jnidriver_JNIDriver_getInterrupt(JNIEnv *env,
 
     if (read_flag < 0) return -1;
 
-    if (strcmp(read_data, UP_TEXT) == 0) return 1;
-    if (strcmp(read_data, DOWN_TEXT) == 0) return 2;
-    if (strcmp(read_data, LEFT_TEXT) == 0) return 3;
-    if (strcmp(read_data, RIGHT_TEXT) == 0) return 4;
-    if (strcmp(read_data, CENTER_TEXT) == 0) return 5;
+    if (strcmp(read_data, CENTER_TEXT) == 0) return CENTER;
+    if (strcmp(read_data, DOWN_TEXT) == 0) return DO;
+    if (strcmp(read_data, LEFT_TEXT) == 0) return MI;
+    if (strcmp(read_data, RIGHT_TEXT) == 0) return SO;
+    if (strcmp(read_data, UP_TEXT) == 0) return HIGH_DO;
 
     return -1;
 }
