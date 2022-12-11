@@ -128,4 +128,44 @@ public class MainActivity extends Activity implements JNIListener {
                 return -1;
         }
     }
+    
+    public class ScoreThread extends Thread {
+        @Override
+        public void run() {
+            super.run();
+            
+            while (isScoreThreadRunning) {
+                byte[] data = {0, 0, 0, 0, 0, 0};
+                
+                data[0] = (byte) (score / 100000 % 10);
+                data[1] = (byte) (score / 10000 % 10);
+                data[2] = (byte) (score / 1000 % 10);
+                data[3] = (byte) (score / 100 % 10);
+                data[4] = (byte) (score / 10 % 10);
+                data[5] = (byte) (score % 10);
+                
+                driver.displaySegment(data);
+            }
+        }
+    }
+    
+    public Handler pushButtonHandler = new Handler() {
+        public void handleMessage(Message message) {
+            switch (message.arg1) {
+                case CENTER:
+                    if (buttonLocker == NOT_STARTED) {
+                        startPhase();
+                    }
+                    break;
+                case DO:
+                case MI:
+                case SO:
+                case HIGH_DO:
+                    if (buttonLocker == OPEN) {
+                        judgeSingleNote(message.arg1);
+                    }
+                    break;
+            }
+        }
+    }
 }
