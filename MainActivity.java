@@ -79,4 +79,53 @@ public class MainActivity extends Activity implements JNIListener {
         }
         super.onResume();
     }
+    
+    public static void delay(int miliseconds) {
+        try {
+            Thread.sleep(miliseconds);
+        } catch (InterruptedException e) { }
+    }
+    
+    public static void createRandomNote(int selectedIndex) {
+        byte[] sampleNotes = {DO, MI, SO, HIGH_DO};
+        int randomIndex = (int) (Math.random() * 4);
+        
+        notes[selectedIndex] = sampleNotes[randomIndex];
+    }
+    
+    public static void judgeSingleNote(int currentGuess) {
+        if (guessIndex > round) return;
+        
+        if (currentGuess == notes[guessIndex]) {
+            score += round;
+            guessIndex += 1;
+            
+            byte[] ledBit = {0, 0, 0, 0, 0, 0, 0};
+            ledBit[getConvertedLEDValueFromNote(notes[guessIndex - 1])] = 1;
+            
+            displayLED(ledBit);
+            playNote(notes[guessIndex - 1]);
+            
+            if (guessIndex > round) {
+                correctAnswerPhase();
+            }
+        } else {
+            wrongAnswerPhase();
+        }
+    }
+    
+    public static int getConvertedLEDValueFromNote(int noteValue) {
+        switch (noteValue) {
+            case DO:
+                return 7;
+            case MI:
+                return 6;
+            case SO:
+                return 5;
+            case HIGH_DO:
+                return 4;
+            default:
+                return -1;
+        }
+    }
 }
