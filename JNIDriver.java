@@ -47,7 +47,7 @@ public class JNIDriver implements JNIListener {
     }
     
     public void playNote(int note) {
-        if (!isConnected) return;
+        if (!isConnected || note == -1) return;
         
         writePiezo((char) note);
     }
