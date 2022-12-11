@@ -235,10 +235,13 @@ public class MainActivity extends Activity implements JNIListener {
             guessIndex += 1;
             
             byte[] ledBit = {0, 0, 0, 0, 0, 0, 0};
-            ledBit[getConvertedLEDValueFromNote(notes[guessIndex - 1])] = 1;
+            ledBit[getConvertedLEDValueFromNote(currentGuess)] = 1;
             
+            changeArrowBoard(currentGuess);
             displayLED(ledBit);
             playNote(notes[guessIndex - 1]);
+            
+            changeArrowBoard(-1);
             
             if (guessIndex > round) {
                 correctAnswerPhase();
@@ -260,6 +263,25 @@ public class MainActivity extends Activity implements JNIListener {
                 return 4;
             default:
                 return -1;
+        }
+    }
+    
+    public static void changeArrowBoard(int arrowCode) {
+        switch (arrowCode) {
+            case DO:
+                arrowBoard.setImageResource(R.drawable.board_bottom);
+                break;
+            case MI:
+                arrowBoard.setImageResource(R.drawable.board_left);
+                break;
+            case SO:
+                arrowBoard.setImageResource(R.drawable.board_right);
+                break;
+            case HIGH_DO:
+                arrowBoard.setImageResource(R.drawable.board_top);
+                break;
+            default:
+                arrowBoard.setImageResource(R.drawable.board_disabled);
         }
     }
     
