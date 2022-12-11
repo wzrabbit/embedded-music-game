@@ -66,6 +66,140 @@ public class MainActivity extends Activity implements JNIListener {
         waitingPhase();
     }
     
+    public static void waitingPhase() {
+        buttonLocker = WAITING;
+        
+        driver.clearLCDText();
+        driver.setLCDText("PRESS CENTER", 0);
+        driver.setLCDText("TO START", 1);
+        gameMessage.setText(WAITING_MESSAGE);
+    }
+    
+    public static void startPhase() {
+        score = 0;
+        life = 3;
+        round = 1;
+        buttonLocker = LOCKED;
+        
+        driver.clearLCDText();
+        driver.setLCDText("GAME START", 0);
+        
+        delay(3000);
+        
+        if (firstRun) {
+            firstRun = false;
+            introducePhase();
+        }
+        
+        isScoreThreadRunning = true;
+        listenPhase();
+    }
+    
+    public static void introducePhase() {
+        gameMessage.setText(INTRODUCE_MESSAGE_1);
+        delay(3000);
+        gameMessage.setText(INTRODUCE_MESSAGE_2);
+        delay(3000);
+        gameMessage.setText(INTRODUCE_MESSAGE_3);
+        delay(3000);
+        gameMessage.setText(INTRODUCE_MESSAGE_4);
+        delay(3000);
+    }
+    
+    public static void roundAnnouncePhase() {
+        round += 1;
+        
+        driver.clearLCDText();
+        driver.setLCDText("ROUND " + round, 0);
+        driver.setLCDText("LIFE " + life, 1);
+        gameMessage.setText(round + " 단계");
+        
+        createRandomNote(round);
+        
+        delay(2000);
+        listenPhase();
+    }
+    
+    public static void listenPhase() {
+        driver.clearLCDText();
+        driver.setLCDText("ROUND " + round, 0);
+        driver.setLCDText("LIFE " + life, 1);
+        gameMessage.setText(LISTEN_MESSAGE);
+        
+        for (int i = 1; i <= round; i++) {
+            byte[] ledBit = {0, 0, 0, 0, 0, 0, 0};
+            ledBit[getConvertedLEDValueFromNote(notes[i])] = 1;
+            
+            displayLED(ledBit);
+            playNote(notes[i]);
+        }
+        
+        playPhase();
+    }
+    
+    public static void playPhase() {
+        driver.clearLCDText();
+        driver.setLCDText("ROUND " + round, 0);
+        driver.setLCDText("LIFE " + life, 1);
+        gameMessage.setText(PLAY_MESSAGE);
+        
+        guessIndex = 1;
+        buttonLocker = OPEN;
+    }
+    
+    public static void correctAnswerPhase() {
+        buttonLocker = LOCKED;
+        
+        driver.setLCDText("GREAT JOB", 0);
+        driver.setLCDText("LIFE " + life, 1);
+        gameMessage.setText("정답입니다! 다음 라운드로 넘어가겠습니다.");
+        
+        delay(2000);
+        
+        roundAnnouncePhase();
+    }
+    
+    public static void wrongAnswerPhase() {
+        buttonLocker = LOCKED;
+        life -= 1;
+        
+        driver.setLCDText("WRONG MELODY", 0);
+        driver.setLCDText("LIFE " + life, 1);
+        gameMessage.setText("틀렸습니다! 남은 LIFE는 " + life + " 개 입니다.");
+        driver.setVibrator(1);
+        
+        delay(2000);
+        
+        driver.setVibrator(0);
+        
+        if (life <= 0) {
+            gameOverPhase();
+        } else {
+            tryAgainPhase();
+        }
+    }
+    
+    public static void tryAgainPhase() {
+        driver.setLCDText("LETS TRY AGAIN", 0);
+        driver.setLCDText("LIFE " + life, 1);
+        gameMessage.setText("다시 멜로디를 들려드리겠습니다.");
+            
+        delay(3000);
+            
+        listenPhase();
+    }
+    
+    public static void gameOverPhase() {
+        driver.setLCDText("GAME OVER", 0);
+        driver.setLCDText("NICE PLAY", 1);
+        gameMessage.setText("【GAME OVER】\n" + round + " 라운드에서 탈락하셨으며,\n" + score + " 점을 기록하셨습니다.");
+            
+        delay(7000);
+        
+        isScoreThreadRunning = true;
+        waitingPhase();
+    }
+    
     @Override
     public void onPause() {
         driver.close();
