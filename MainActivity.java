@@ -1,12 +1,9 @@
 package com.wz.musicgame;
 
-import java.util.*;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.ImageView;
 
@@ -21,7 +18,7 @@ public class MainActivity extends Activity implements JNIListener {
     static ImageView arrowBoard;
     static TextView gameMessage;
     
-    static final int WAITING = 0;
+    static final int NOT_STARTED = 0;
     static final int LOCKED = 1;
     static final int OPEN = 2;
     
@@ -33,7 +30,7 @@ public class MainActivity extends Activity implements JNIListener {
     
     static final String WAITING_MESSAGE = "【CENTER】 버튼을 눌러 게임을 시작해 주세요.";
     static final String START_MESSAGE = "게임을 시작합니다!";
-    static final String INTRODUCE_MESSAGE_1 = "【HOW TO PLAY】\n1. 멜로디가 연주되면 주의 깊게 들어 주세요."
+    static final String INTRODUCE_MESSAGE_1 = "【HOW TO PLAY】\n1. 멜로디가 연주되면 주의 깊게 들어 주세요.";
     static final String INTRODUCE_MESSAGE_2 = "【HOW TO PLAY】\n2. 멜로디가 끝나면 연주된 멜로디를 방향키를 눌러 똑같이 연주해 주세요.";
     static final String INTRODUCE_MESSAGE_3 = "【HOW TO PLAY】\n3. 멜로디를 잘못 연주해 LIFE가 모두 소진되면, 게임은 끝납니다!";
     static final String INTRODUCE_MESSAGE_4 = "이제 게임을 시작하겠습니다!";
@@ -44,12 +41,12 @@ public class MainActivity extends Activity implements JNIListener {
     
     static ScoreThread scoreThread;
     static boolean isScoreThreadRunning = false;
+    static boolean firstRun = true;
     static int buttonLocker = NOT_STARTED;
     static int score;
     static int life;
     static int round;
     static int guessIndex;
-    static int firstRun = true;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -67,7 +64,7 @@ public class MainActivity extends Activity implements JNIListener {
     }
     
     public static void waitingPhase() {
-        buttonLocker = WAITING;
+        buttonLocker = NOT_STARTED;
         
         driver.clearLCDText();
         driver.setLCDText("PRESS CENTER", 0);
@@ -130,8 +127,8 @@ public class MainActivity extends Activity implements JNIListener {
             byte[] ledBit = {0, 0, 0, 0, 0, 0, 0};
             ledBit[getConvertedLEDValueFromNote(notes[i])] = 1;
             
-            displayLED(ledBit);
-            playNote(notes[i]);
+            driver.displayLED(ledBit);
+            driver.playNote(notes[i]);
         }
         
         playPhase();
@@ -238,8 +235,8 @@ public class MainActivity extends Activity implements JNIListener {
             ledBit[getConvertedLEDValueFromNote(currentGuess)] = 1;
             
             changeArrowBoard(currentGuess);
-            displayLED(ledBit);
-            playNote(notes[guessIndex - 1]);
+            driver.displayLED(ledBit);
+            driver.playNote(notes[guessIndex - 1]);
             
             changeArrowBoard(-1);
             
@@ -323,5 +320,12 @@ public class MainActivity extends Activity implements JNIListener {
                     break;
             }
         }
+    };
+    
+    @Override
+    public void onReceive(int value) {
+        Message text = Message.obtain();
+        text.arg1 = value;
+        pushButtonHandler.sendMessage(text);
     }
 }
