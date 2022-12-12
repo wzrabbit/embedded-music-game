@@ -44,7 +44,12 @@
 #define TEXTLCD_DD_ADDRESS_2 _IO(TEXTLCD_BASE, 0x3c)
 #define TEXTLCD_WRITE_BYTE _IO(TEXTLCD_BASE, 0x3d)
 
-int led_fd, vibrator_fd, piezo_fd, segment_fd, textlcd_fd;
+int led_fd = -1;
+int vibrator_fd = -1;
+int piezo_fd = -1;
+int segment_fd = -1;
+int pushbutton_fd = -1;
+int textlcd_fd = -1;
 
 JNIEXPORT jint JNICALL Java_com_wz_jnidriver_JNIDriver_openDrivers(JNIEnv *env, jclass class) {
     led_fd = open(LED_PATH, O_WRONLY);
@@ -54,7 +59,7 @@ JNIEXPORT jint JNICALL Java_com_wz_jnidriver_JNIDriver_openDrivers(JNIEnv *env, 
     pushbutton_fd = open(PUSHBUTTON_PATH, O_RDONLY);
     textlcd_fd = open(TEXTLCD_PATH, O_WRONLY);
 
-    if (led_fd < 0 || vibrator_fd < 0 || piezo_fd < 0 || segment_fd < 0 || pushbutton_fd < 0 || textlcd_fd < 0) return FAIL;
+    if (piezo_fd < 0 || vibrator_fd < 0 || segment_fd < 0) return FAIL;
     return SUCCESS;
 }
 
@@ -63,6 +68,8 @@ JNIEXPORT void JNICALL Java_com_wz_jnidriver_JNIDriver_closeDrivers(JNIEnv *env,
     if (vibrator_fd > 0) close(vibrator_fd);
     if (piezo_fd > 0) close(piezo_fd);
     if (segment_fd > 0) close(segment_fd);
+    if (pushbutton_fd > 0) close(pushbutton_fd);
+    if (textlcd_fd > 0) close(textlcd_fd);
 }
 
 JNIEXPORT void JNICALL Java_com_wz_jnidriver_JNIDriver_writeLED(JNIEnv *env, jobject obj, jbyteArray arr, jint count) {
