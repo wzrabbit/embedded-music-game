@@ -432,7 +432,6 @@ public class MainActivity extends Activity implements JNIListener {
     
     public Handler pushButtonHandler = new Handler() {
         public void handleMessage(Message message) {
-        	char testNote = '1';
             switch (message.arg1) {    
                 case CENTER:
                     if (buttonLocker == NOT_STARTED) {
