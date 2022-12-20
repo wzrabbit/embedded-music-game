@@ -64,9 +64,6 @@ public class JNIDriver implements JNIListener {
     public void onReceive(int value) {
         if (mainActivityTosser != null) {
             mainActivityTosser.onReceive(value);
-            
-            char testNote = '1';
-            writePiezo(testNote);
         }
     }
     
